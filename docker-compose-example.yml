@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  vpn:
+    container_name: vpn
+    image: qmcgaw/gluetun
+    cap_add:
+      - NET_ADMIN
+    environment:
+      - VPN_SERVICE_PROVIDER=<yourprovider>
+      - OPENVPN_USER=<username>
+      - OPENVPN_PASSWORD=<password>
+      - SERVER_COUNTRIES=<vpncountry>
+      - FREE_ONLY=on
+    networks:
+      - docker_network
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      APP_NAME: Snipper
+    depends_on:
+      - vpn
+    network_mode: 'service:vpn'
+networks:
+  docker_network:
+    external: true
